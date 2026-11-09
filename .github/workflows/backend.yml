@@ -1,0 +1,25 @@
+name: backend
+
+on:
+  push:
+    branches: [main]
+    paths: ['supabase/**', '.github/workflows/backend.yml']
+  pull_request:
+    paths: ['supabase/**', '.github/workflows/backend.yml']
+
+jobs:
+  database:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Start local Supabase
+        run: supabase start
+      - name: Apply migrations from scratch
+        run: supabase db reset
+      - name: Lint schema
+        run: supabase db lint
+      - name: Run pgTAP security tests
+        run: supabase test db
