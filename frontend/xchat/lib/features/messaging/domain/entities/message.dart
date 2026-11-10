@@ -43,7 +43,17 @@ final class Message extends Equatable {
 
   @override
   List<Object?> get props => [
-        id, conversationId, senderId, type, status, createdAt,
-        text, attachments, replyToId, editedAt, reactions, failureReason,
-      ];
+    id,
+    conversationId,
+    senderId,
+    type,
+    status,
+    createdAt,
+    text,
+    attachments,
+    replyToId,
+    editedAt,
+    reactions,
+    failureReason,
+  ];
 }

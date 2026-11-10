@@ -45,11 +45,15 @@ void registerMessagingDependencies(GetIt sl) {
     ..registerLazySingleton<MessageRemoteDataSource>(
       () => MessageRemoteDataSourceImpl(sl<BackendGateway>(), sl<Clock>()),
     )
-    ..registerLazySingleton<MessageLocalDataSource>(() => MessageLocalDataSourceImpl(sl<LocalDatabase>()))
+    ..registerLazySingleton<MessageLocalDataSource>(
+      () => MessageLocalDataSourceImpl(sl<LocalDatabase>()),
+    )
     ..registerLazySingleton<MessageRealtimeDataSource>(
       () => MessageRealtimeDataSourceImpl(sl<RealtimeGateway>()),
     )
-    ..registerLazySingleton<DraftLocalDataSource>(() => DraftLocalDataSourceImpl(sl<LocalDatabase>()))
+    ..registerLazySingleton<DraftLocalDataSource>(
+      () => DraftLocalDataSourceImpl(sl<LocalDatabase>()),
+    )
     // repositories
     ..registerLazySingleton<MessageRepository>(
       () => MessageRepositoryImpl(

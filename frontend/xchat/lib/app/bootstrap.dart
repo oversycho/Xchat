@@ -15,22 +15,23 @@ typedef AppBuilder = Future<Widget> Function(ErrorReporter reporter);
 Future<void> bootstrap(AppBuilder builder) async {
   const reporter = DebugErrorReporter(); // swap for a Sentry-backed reporter in production
 
-  await runZonedGuarded<Future<void>>(
-    () async {
-      WidgetsFlutterBinding.ensureInitialized();
+  await runZonedGuarded<Future<void>>(() async {
+    WidgetsFlutterBinding.ensureInitialized();
 
-      FlutterError.onError = (details) {
-        FlutterError.presentError(details);
-        reporter.report(details.exception, details.stack ?? StackTrace.current, context: 'FlutterError');
-      };
-      PlatformDispatcher.instance.onError = (error, stack) {
-        reporter.report(error, stack, context: 'PlatformDispatcher');
-        return true;
-      };
-      Bloc.observer = const AppBlocObserver(reporter);
+    FlutterError.onError = (details) {
+      FlutterError.presentError(details);
+      reporter.report(
+        details.exception,
+        details.stack ?? StackTrace.current,
+        context: 'FlutterError',
+      );
+    };
+    PlatformDispatcher.instance.onError = (error, stack) {
+      reporter.report(error, stack, context: 'PlatformDispatcher');
+      return true;
+    };
+    Bloc.observer = const AppBlocObserver(reporter);
 
-      runApp(await builder(reporter));
-    },
-    (error, stack) => reporter.report(error, stack, context: 'Zone'),
-  );
+    runApp(await builder(reporter));
+  }, (error, stack) => reporter.report(error, stack, context: 'Zone'));
 }

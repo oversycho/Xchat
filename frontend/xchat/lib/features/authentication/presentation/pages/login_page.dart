@@ -61,7 +61,10 @@ class _LoginPageState extends State<LoginPage> {
                   FilledButton(
                     onPressed: busy ? null : _submit,
                     child: busy
-                        ? const SizedBox.square(dimension: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                        ? const SizedBox.square(
+                            dimension: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
                         : const Text('Send code'),
                   ),
                 ],

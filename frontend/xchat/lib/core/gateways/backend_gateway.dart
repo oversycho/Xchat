@@ -5,7 +5,8 @@ final class BackendFilter {
   const BackendFilter.eq(String column, Object? value) : this(column, FilterOp.eq, value);
   const BackendFilter.lt(String column, Object? value) : this(column, FilterOp.lt, value);
   const BackendFilter.gt(String column, Object? value) : this(column, FilterOp.gt, value);
-  const BackendFilter.inList(String column, List<Object> values) : this(column, FilterOp.inList, values);
+  const BackendFilter.inList(String column, List<Object> values)
+    : this(column, FilterOp.inList, values);
   const BackendFilter.isNull(String column) : this(column, FilterOp.isNull);
 
   final String column;
@@ -40,11 +41,7 @@ abstract interface class BackendGateway {
     String returning = '*',
   });
 
-  Future<void> upsertAll(
-    String table,
-    List<Map<String, dynamic>> rows, {
-    String? onConflict,
-  });
+  Future<void> upsertAll(String table, List<Map<String, dynamic>> rows, {String? onConflict});
 
   Future<void> update(
     String table,
@@ -52,8 +49,5 @@ abstract interface class BackendGateway {
     required List<BackendFilter> filters,
   });
 
-  Future<void> delete(
-    String table, {
-    required List<BackendFilter> filters,
-  });
+  Future<void> delete(String table, {required List<BackendFilter> filters});
 }

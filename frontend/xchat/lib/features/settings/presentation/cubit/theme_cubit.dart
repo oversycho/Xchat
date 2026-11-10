@@ -7,9 +7,9 @@ import 'package:xchat/features/settings/domain/usecases/theme_usecases.dart';
 /// persistence is best-effort (a storage failure must never block switching theme).
 class ThemeCubit extends Cubit<AppThemeMode> {
   ThemeCubit({required GetThemeMode getThemeMode, required SetThemeMode setThemeMode})
-      : _getThemeMode = getThemeMode,
-        _setThemeMode = setThemeMode,
-        super(AppThemeMode.system);
+    : _getThemeMode = getThemeMode,
+      _setThemeMode = setThemeMode,
+      super(AppThemeMode.system);
 
   final GetThemeMode _getThemeMode;
   final SetThemeMode _setThemeMode;

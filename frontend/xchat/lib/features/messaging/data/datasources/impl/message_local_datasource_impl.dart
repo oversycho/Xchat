@@ -10,21 +10,23 @@ final class MessageLocalDataSourceImpl implements MessageLocalDataSource {
   static const _synced = {'sent', 'read'};
 
   LocalRecord _toRecord(MessageModel m) => LocalRecord(
-        id: m.id,
-        partition: m.conversationId,
-        sortKey: m.createdAt.microsecondsSinceEpoch,
-        status: m.status,
-        data: m.toJson(),
-      );
+    id: m.id,
+    partition: m.conversationId,
+    sortKey: m.createdAt.microsecondsSinceEpoch,
+    status: m.status,
+    data: m.toJson(),
+  );
 
   MessageModel _fromRecord(LocalRecord r) => MessageModel.fromJson(r.data);
 
   @override
-  Stream<List<MessageModel>> watch(String conversationId) =>
-      _db.watch(_collection, partition: conversationId).map((rows) => rows.map(_fromRecord).toList());
+  Stream<List<MessageModel>> watch(String conversationId) => _db
+      .watch(_collection, partition: conversationId)
+      .map((rows) => rows.map(_fromRecord).toList());
 
   @override
-  Future<void> upsertAll(List<MessageModel> models) => _db.putAll(_collection, models.map(_toRecord).toList());
+  Future<void> upsertAll(List<MessageModel> models) =>
+      _db.putAll(_collection, models.map(_toRecord).toList());
 
   @override
   Future<MessageModel?> getById(String id) async {
@@ -47,8 +49,11 @@ final class MessageLocalDataSourceImpl implements MessageLocalDataSource {
   Future<void> deleteById(String id) => _db.delete(_collection, id);
 
   @override
-  Future<List<MessageModel>> pending() async =>
-      (await _db.query(_collection, statuses: {'pending'}, descending: false)).map(_fromRecord).toList();
+  Future<List<MessageModel>> pending() async => (await _db.query(
+    _collection,
+    statuses: {'pending'},
+    descending: false,
+  )).map(_fromRecord).toList();
 
   @override
   Future<void> resetSendingToPending() async {
@@ -71,7 +76,12 @@ final class MessageLocalDataSourceImpl implements MessageLocalDataSource {
 
   @override
   Future<DateTime?> newestSyncedCreatedAt(String conversationId) async {
-    final rows = await _db.query(_collection, partition: conversationId, statuses: _synced, limit: 1);
+    final rows = await _db.query(
+      _collection,
+      partition: conversationId,
+      statuses: _synced,
+      limit: 1,
+    );
     return rows.isEmpty ? null : _fromRecord(rows.first).createdAt;
   }
 }

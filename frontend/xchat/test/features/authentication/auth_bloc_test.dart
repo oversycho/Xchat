@@ -25,12 +25,12 @@ void main() {
   // Real use cases over a mocked repository interface: tests the BLoC and the
   // validation rules together without touching Supabase.
   AuthBloc buildBloc() => AuthBloc(
-        watchAuthState: WatchAuthState(repository),
-        signInWithPhone: SignInWithPhone(repository),
-        verifyOtp: VerifyOtp(repository),
-        signOut: SignOut(repository, cleaner),
-        deleteAccount: DeleteAccount(repository, cleaner),
-      );
+    watchAuthState: WatchAuthState(repository),
+    signInWithPhone: SignInWithPhone(repository),
+    verifyOtp: VerifyOtp(repository),
+    signOut: SignOut(repository, cleaner),
+    deleteAccount: DeleteAccount(repository, cleaner),
+  );
 
   setUp(() {
     repository = _MockAuthRepository();
@@ -40,7 +40,8 @@ void main() {
 
   blocTest<AuthBloc, AuthState>(
     'started without a session -> unauthenticated',
-    setUp: () => when(() => repository.watchAuthState()).thenAnswer((_) => Stream<AuthUser?>.value(null)),
+    setUp: () =>
+        when(() => repository.watchAuthState()).thenAnswer((_) => Stream<AuthUser?>.value(null)),
     build: buildBloc,
     act: (bloc) => bloc.add(const AuthEvent.started()),
     expect: () => [const AuthState.unauthenticated()],
@@ -48,7 +49,8 @@ void main() {
 
   blocTest<AuthBloc, AuthState>(
     'started with a session -> authenticated',
-    setUp: () => when(() => repository.watchAuthState()).thenAnswer((_) => Stream<AuthUser?>.value(user)),
+    setUp: () =>
+        when(() => repository.watchAuthState()).thenAnswer((_) => Stream<AuthUser?>.value(user)),
     build: buildBloc,
     act: (bloc) => bloc.add(const AuthEvent.started()),
     expect: () => [const AuthState.authenticated(user: user)],
@@ -56,7 +58,9 @@ void main() {
 
   blocTest<AuthBloc, AuthState>(
     'requesting a code moves to the code step',
-    setUp: () => when(() => repository.sendOtp(phone)).thenAnswer((_) async => Either<Failure, void>.right(null)),
+    setUp: () => when(
+      () => repository.sendOtp(phone),
+    ).thenAnswer((_) async => Either<Failure, void>.right(null)),
     build: buildBloc,
     seed: () => const AuthState.unauthenticated(),
     act: (bloc) => bloc.add(const AuthEvent.otpRequested(phone)),
@@ -82,8 +86,9 @@ void main() {
 
   blocTest<AuthBloc, AuthState>(
     'a correct code authenticates the user',
-    setUp: () => when(() => repository.verifyOtp(phone: phone, code: '123456'))
-        .thenAnswer((_) async => Either<Failure, AuthUser>.right(user)),
+    setUp: () => when(
+      () => repository.verifyOtp(phone: phone, code: '123456'),
+    ).thenAnswer((_) async => Either<Failure, AuthUser>.right(user)),
     build: buildBloc,
     seed: () => const AuthState.unauthenticated(step: AuthStep.enterCode, phone: phone),
     act: (bloc) => bloc.add(const AuthEvent.otpSubmitted('123456')),
@@ -96,7 +101,9 @@ void main() {
   blocTest<AuthBloc, AuthState>(
     'a wrong code keeps the user on the code step with the failure',
     setUp: () => when(() => repository.verifyOtp(phone: phone, code: '000000')).thenAnswer(
-      (_) async => Either<Failure, AuthUser>.left(const UnauthorizedFailure('Token has expired or is invalid')),
+      (_) async => Either<Failure, AuthUser>.left(
+        const UnauthorizedFailure('Token has expired or is invalid'),
+      ),
     ),
     build: buildBloc,
     seed: () => const AuthState.unauthenticated(step: AuthStep.enterCode, phone: phone),
@@ -113,7 +120,8 @@ void main() {
 
   blocTest<AuthBloc, AuthState>(
     'signing out clears local data and returns to unauthenticated',
-    setUp: () => when(() => repository.signOut()).thenAnswer((_) async => Either<Failure, void>.right(null)),
+    setUp: () =>
+        when(() => repository.signOut()).thenAnswer((_) async => Either<Failure, void>.right(null)),
     build: buildBloc,
     seed: () => const AuthState.authenticated(user: user),
     act: (bloc) => bloc.add(const AuthEvent.signOutRequested()),
@@ -126,8 +134,9 @@ void main() {
 
   blocTest<AuthBloc, AuthState>(
     'a failed sign-out keeps the user signed in and does NOT wipe local data',
-    setUp: () => when(() => repository.signOut())
-        .thenAnswer((_) async => Either<Failure, void>.left(const NetworkFailure())),
+    setUp: () => when(
+      () => repository.signOut(),
+    ).thenAnswer((_) async => Either<Failure, void>.left(const NetworkFailure())),
     build: buildBloc,
     seed: () => const AuthState.authenticated(user: user),
     act: (bloc) => bloc.add(const AuthEvent.signOutRequested()),

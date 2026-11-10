@@ -1,11 +1,7 @@
 enum RealtimeEventType { insert, update, delete, resync }
 
 final class RealtimeChange {
-  const RealtimeChange(
-    this.type, {
-    this.newRecord = const {},
-    this.oldRecord = const {},
-  });
+  const RealtimeChange(this.type, {this.newRecord = const {}, this.oldRecord = const {}});
 
   final RealtimeEventType type;
   final Map<String, dynamic> newRecord;

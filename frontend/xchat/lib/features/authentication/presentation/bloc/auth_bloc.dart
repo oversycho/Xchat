@@ -15,12 +15,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required VerifyOtp verifyOtp,
     required SignOut signOut,
     required DeleteAccount deleteAccount,
-  })  : _watchAuthState = watchAuthState,
-        _signInWithPhone = signInWithPhone,
-        _verifyOtp = verifyOtp,
-        _signOut = signOut,
-        _deleteAccount = deleteAccount,
-        super(const AuthState.unknown()) {
+  }) : _watchAuthState = watchAuthState,
+       _signInWithPhone = signInWithPhone,
+       _verifyOtp = verifyOtp,
+       _signOut = signOut,
+       _deleteAccount = deleteAccount,
+       super(const AuthState.unknown()) {
     on<AuthStarted>(_onStarted);
     on<AuthOtpRequested>(_onOtpRequested, transformer: droppable());
     on<AuthOtpSubmitted>(_onOtpSubmitted, transformer: droppable());
@@ -56,16 +56,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final current = state;
     if (current is! AuthUnauthenticated || current.isBusy) return;
 
-    emit(current.copyWith(isBusy: true, failure: null));
+    emit(current.copyWith(isBusy: true, clearFailure: true));
     final result = await _signInWithPhone(event.phone);
 
     final latest = state;
     if (latest is! AuthUnauthenticated) return;
     result.fold(
       (failure) => emit(latest.copyWith(isBusy: false, failure: failure)),
-      (_) => emit(
-        latest.copyWith(isBusy: false, step: AuthStep.enterCode, phone: event.phone.trim()),
-      ),
+      (_) =>
+          emit(latest.copyWith(isBusy: false, step: AuthStep.enterCode, phone: event.phone.trim())),
     );
   }
 
@@ -75,7 +74,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final phone = current.phone;
     if (phone == null) return;
 
-    emit(current.copyWith(isBusy: true, failure: null));
+    emit(current.copyWith(isBusy: true, clearFailure: true));
     final result = await _verifyOtp(VerifyOtpParams(phone: phone, code: event.code));
 
     final latest = state;
@@ -89,7 +88,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   void _onBackToPhone(AuthBackToPhoneRequested event, Emitter<AuthState> emit) {
     final current = state;
     if (current is AuthUnauthenticated) {
-      emit(current.copyWith(step: AuthStep.enterPhone, isBusy: false, failure: null));
+      emit(current.copyWith(step: AuthStep.enterPhone, isBusy: false, clearFailure: true));
     }
   }
 
@@ -97,7 +96,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final current = state;
     if (current is! AuthAuthenticated || current.isBusy) return;
 
-    emit(current.copyWith(isBusy: true, failure: null));
+    emit(current.copyWith(isBusy: true, clearFailure: true));
     final result = await _signOut(const NoParams());
 
     final latest = state;
@@ -112,7 +111,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final current = state;
     if (current is! AuthAuthenticated || current.isBusy) return;
 
-    emit(current.copyWith(isBusy: true, failure: null));
+    emit(current.copyWith(isBusy: true, clearFailure: true));
     final result = await _deleteAccount(const NoParams());
 
     final latest = state;
@@ -127,9 +126,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final current = state;
     switch (current) {
       case AuthUnauthenticated():
-        emit(current.copyWith(failure: null));
+        emit(current.copyWith(clearFailure: true));
       case AuthAuthenticated():
-        emit(current.copyWith(failure: null));
+        emit(current.copyWith(clearFailure: true));
       case AuthUnknown():
         break;
     }

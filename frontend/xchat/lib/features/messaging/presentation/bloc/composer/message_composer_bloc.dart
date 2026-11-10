@@ -21,17 +21,17 @@ class MessageComposerBloc extends Bloc<MessageComposerEvent, MessageComposerStat
     required SaveDraft saveDraft,
     required ClearDraft clearDraft,
     this.draftDebounce = const Duration(milliseconds: 500),
-  })  : _sendMessage = sendMessage,
-        _editMessage = editMessage,
-        _getDraft = getDraft,
-        _saveDraft = saveDraft,
-        _clearDraft = clearDraft,
-        super(const MessageComposerState()) {
+  }) : _sendMessage = sendMessage,
+       _editMessage = editMessage,
+       _getDraft = getDraft,
+       _saveDraft = saveDraft,
+       _clearDraft = clearDraft,
+       super(const MessageComposerState()) {
     on<ComposerStarted>(_onStarted);
     on<ComposerTextChanged>(_onTextChanged);
     on<ComposerDraftFlushRequested>(_onDraftFlush, transformer: debounced(draftDebounce));
     on<ComposerReplySet>((e, emit) => emit(state.copyWith(replyTo: e.message)));
-    on<ComposerReplyCleared>((e, emit) => emit(state.copyWith(replyTo: null)));
+    on<ComposerReplyCleared>((e, emit) => emit(state.copyWith(clearReplyTo: true)));
     on<ComposerEditStarted>(_onEditStarted);
     on<ComposerEditCancelled>(_onEditCancelled);
     on<ComposerAttachmentAdded>(
@@ -39,11 +39,13 @@ class MessageComposerBloc extends Bloc<MessageComposerEvent, MessageComposerStat
     );
     on<ComposerAttachmentRemoved>(
       (e, emit) => emit(
-        state.copyWith(attachments: state.attachments.where((a) => a.id != e.attachmentId).toList()),
+        state.copyWith(
+          attachments: state.attachments.where((a) => a.id != e.attachmentId).toList(),
+        ),
       ),
     );
     on<ComposerSendPressed>(_onSendPressed, transformer: droppable());
-    on<ComposerFailureDismissed>((e, emit) => emit(state.copyWith(failure: null)));
+    on<ComposerFailureDismissed>((e, emit) => emit(state.copyWith(clearFailure: true)));
   }
 
   final String conversationId;
@@ -81,29 +83,33 @@ class MessageComposerBloc extends Bloc<MessageComposerEvent, MessageComposerStat
         editing: event.message,
         textBeforeEdit: state.isEditing ? state.textBeforeEdit : state.text,
         text: event.message.text ?? '',
-        replyTo: null,
+        clearReplyTo: true,
         attachments: const [],
-        failure: null,
+        clearFailure: true,
       ),
     );
   }
 
   void _onEditCancelled(ComposerEditCancelled event, Emitter<MessageComposerState> emit) {
     if (!state.isEditing) return;
-    emit(state.copyWith(editing: null, text: state.textBeforeEdit ?? '', textBeforeEdit: null));
+    emit(
+      state.copyWith(
+        clearEditing: true,
+        text: state.textBeforeEdit ?? '',
+        clearTextBeforeEdit: true,
+      ),
+    );
   }
 
-  Future<void> _onSendPressed(
-    ComposerSendPressed event,
-    Emitter<MessageComposerState> emit,
-  ) async {
+  Future<void> _onSendPressed(ComposerSendPressed event, Emitter<MessageComposerState> emit) async {
     if (!state.canSend) return;
-    emit(state.copyWith(isSending: true, failure: null));
+    emit(state.copyWith(isSending: true, clearFailure: true));
 
     final editing = state.editing;
     final Failure? failure = editing != null
-        ? (await _editMessage(EditMessageParams(messageId: editing.id, newText: state.text)))
-            .fold<Failure?>((f) => f, (_) => null)
+        ? (await _editMessage(
+            EditMessageParams(messageId: editing.id, newText: state.text),
+          )).fold<Failure?>((f) => f, (_) => null)
         : (await _sendMessage(
             SendMessageParams(
               conversationId: conversationId,
@@ -112,8 +118,7 @@ class MessageComposerBloc extends Bloc<MessageComposerEvent, MessageComposerStat
               attachments: state.attachments,
               replyToId: state.replyTo?.id,
             ),
-          ))
-            .fold<Failure?>((f) => f, (_) => null);
+          )).fold<Failure?>((f) => f, (_) => null);
 
     if (failure != null) {
       emit(state.copyWith(isSending: false, failure: failure));

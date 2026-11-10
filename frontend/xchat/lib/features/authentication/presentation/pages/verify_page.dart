@@ -26,7 +26,9 @@ class _VerifyPageState extends State<VerifyPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(onPressed: () => context.read<AuthBloc>().add(const AuthEvent.backToPhoneRequested())),
+        leading: BackButton(
+          onPressed: () => context.read<AuthBloc>().add(const AuthEvent.backToPhoneRequested()),
+        ),
       ),
       body: SafeArea(
         child: BlocConsumer<AuthBloc, AuthState>(
@@ -65,7 +67,10 @@ class _VerifyPageState extends State<VerifyPage> {
                   FilledButton(
                     onPressed: busy ? null : _submit,
                     child: busy
-                        ? const SizedBox.square(dimension: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                        ? const SizedBox.square(
+                            dimension: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
                         : const Text('Verify'),
                   ),
                 ],

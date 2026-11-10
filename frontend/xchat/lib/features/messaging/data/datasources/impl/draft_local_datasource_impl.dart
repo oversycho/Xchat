@@ -16,13 +16,13 @@ final class DraftLocalDataSourceImpl implements DraftLocalDataSource {
 
   @override
   Future<void> save(DraftModel model) => _db.putAll(_collection, [
-        LocalRecord(
-          id: model.conversationId,
-          partition: model.conversationId,
-          sortKey: model.updatedAt.microsecondsSinceEpoch,
-          data: model.toJson(),
-        ),
-      ]);
+    LocalRecord(
+      id: model.conversationId,
+      partition: model.conversationId,
+      sortKey: model.updatedAt.microsecondsSinceEpoch,
+      data: model.toJson(),
+    ),
+  ]);
 
   @override
   Future<void> delete(String conversationId) => _db.delete(_collection, conversationId);

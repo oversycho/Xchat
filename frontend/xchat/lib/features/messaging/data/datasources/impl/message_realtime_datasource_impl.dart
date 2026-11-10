@@ -9,7 +9,9 @@ final class MessageRealtimeDataSourceImpl implements MessageRealtimeDataSource {
   Stream<MessageChange> watch(String conversationId) => _gateway
       .watchTable('messages', filterColumn: 'conversation_id', filterValue: conversationId)
       .map((change) {
-        final record = change.type == RealtimeEventType.delete ? change.oldRecord : change.newRecord;
+        final record = change.type == RealtimeEventType.delete
+            ? change.oldRecord
+            : change.newRecord;
         final id = record['id'] as String?;
         return switch (change.type) {
           RealtimeEventType.insert => MessageChange(MessageChangeType.inserted, messageId: id),

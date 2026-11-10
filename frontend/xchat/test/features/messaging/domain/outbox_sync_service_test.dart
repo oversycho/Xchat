@@ -30,7 +30,9 @@ void main() {
     outbox = _MockOutboxRepository();
     connectivity = _FakeConnectivity();
     when(() => outbox.flush()).thenAnswer((_) async => Either<Failure, int>.right(0));
-    when(() => outbox.recoverInterrupted()).thenAnswer((_) async => Either<Failure, void>.right(null));
+    when(
+      () => outbox.recoverInterrupted(),
+    ).thenAnswer((_) async => Either<Failure, void>.right(null));
     service = OutboxSyncService(
       connectivity: connectivity,
       flushOutbox: FlushOutbox(outbox),

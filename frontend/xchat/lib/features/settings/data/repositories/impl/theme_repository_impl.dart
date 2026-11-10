@@ -11,10 +11,11 @@ final class ThemeRepositoryImpl implements ThemeRepository {
 
   @override
   Future<Either<Failure, AppThemeMode>> load() => guard(() async {
-        final stored = await _local.read();
-        return AppThemeMode.values.asNameMap()[stored] ?? AppThemeMode.system;
-      });
+    final stored = await _local.read();
+    return AppThemeMode.values.asNameMap()[stored] ?? AppThemeMode.system;
+  });
 
   @override
-  Future<Either<Failure, void>> save(AppThemeMode mode) => guard<void>(() => _local.write(mode.name));
+  Future<Either<Failure, void>> save(AppThemeMode mode) =>
+      guard<void>(() => _local.write(mode.name));
 }

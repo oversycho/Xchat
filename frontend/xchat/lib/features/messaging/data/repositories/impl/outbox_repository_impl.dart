@@ -7,9 +7,11 @@ import 'package:xchat/features/messaging/domain/repositories/outbox_repository.d
 import 'package:fpdart/fpdart.dart';
 
 final class OutboxRepositoryImpl implements OutboxRepository {
-  OutboxRepositoryImpl({required MessageRemoteDataSource remote, required MessageLocalDataSource local})
-      : _remote = remote,
-        _local = local;
+  OutboxRepositoryImpl({
+    required MessageRemoteDataSource remote,
+    required MessageLocalDataSource local,
+  }) : _remote = remote,
+       _local = local;
 
   final MessageRemoteDataSource _remote;
   final MessageLocalDataSource _local;
@@ -47,10 +49,10 @@ final class OutboxRepositoryImpl implements OutboxRepository {
 
   @override
   Future<Either<Failure, void>> retry(String messageId) => guard<void>(() async {
-        final message = await _local.getById(messageId);
-        if (message == null || message.status != 'failed') return;
-        await _local.updateStatus(messageId, 'pending');
-      });
+    final message = await _local.getById(messageId);
+    if (message == null || message.status != 'failed') return;
+    await _local.updateStatus(messageId, 'pending');
+  });
 
   @override
   Future<Either<Failure, void>> recoverInterrupted() => guard<void>(_local.resetSendingToPending);

@@ -20,8 +20,6 @@ jobs:
           channel: stable
           cache: true
       - run: flutter pub get
-      - name: Generate code (freezed)
-        run: dart run build_runner build --delete-conflicting-outputs
       - name: Formatting
         run: dart format --output=none --set-exit-if-changed lib test
       - name: Static analysis

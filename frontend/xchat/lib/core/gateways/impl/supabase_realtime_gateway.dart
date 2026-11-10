@@ -40,15 +40,15 @@ final class SupabaseRealtimeGateway implements RealtimeGateway {
               ),
             )
             .subscribe((status, error) {
-          if (status == RealtimeSubscribeStatus.subscribed) {
-            if (hasSubscribedBefore) {
-              controller.add(const RealtimeChange(RealtimeEventType.resync));
-            }
-            hasSubscribedBefore = true;
-          } else if (error != null) {
-            controller.addError(RealtimeException(error.toString()));
-          }
-        });
+              if (status == RealtimeSubscribeStatus.subscribed) {
+                if (hasSubscribedBefore) {
+                  controller.add(const RealtimeChange(RealtimeEventType.resync));
+                }
+                hasSubscribedBefore = true;
+              } else if (error != null) {
+                controller.addError(RealtimeException(error.toString()));
+              }
+            });
       },
       onCancel: () async {
         final current = channel;
@@ -59,8 +59,8 @@ final class SupabaseRealtimeGateway implements RealtimeGateway {
   }
 
   RealtimeEventType _typeOf(PostgresChangeEvent event) => switch (event) {
-        PostgresChangeEvent.insert => RealtimeEventType.insert,
-        PostgresChangeEvent.delete => RealtimeEventType.delete,
-        _ => RealtimeEventType.update,
-      };
+    PostgresChangeEvent.insert => RealtimeEventType.insert,
+    PostgresChangeEvent.delete => RealtimeEventType.delete,
+    _ => RealtimeEventType.update,
+  };
 }

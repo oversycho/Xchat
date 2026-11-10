@@ -17,12 +17,15 @@ void main() {
   List<String> importsOf(File f) =>
       importPattern.allMatches(f.readAsStringSync()).map((m) => m.group(1)!).toList();
 
-  List<String> violations(bool Function(String file) applies, bool Function(String import) forbidden) => [
-        for (final f in files)
-          if (applies(norm(f.path)))
-            for (final i in importsOf(f))
-              if (forbidden(norm(i))) '${norm(f.path)} -> $i',
-      ];
+  List<String> violations(
+    bool Function(String file) applies,
+    bool Function(String import) forbidden,
+  ) => [
+    for (final f in files)
+      if (applies(norm(f.path)))
+        for (final i in importsOf(f))
+          if (forbidden(norm(i))) '${norm(f.path)} -> $i',
+  ];
 
   test('domain depends on nothing outside domain/core', () {
     final bad = violations(
@@ -41,7 +44,8 @@ void main() {
   test('presentation never touches the data layer or SDKs', () {
     final bad = violations(
       (f) => f.contains('/presentation/'),
-      (i) => i.contains('/data/') || i.startsWith('package:supabase') || i.startsWith('package:isar'),
+      (i) =>
+          i.contains('/data/') || i.startsWith('package:supabase') || i.startsWith('package:isar'),
     );
     expect(bad, isEmpty, reason: bad.join('\n'));
   });
@@ -89,20 +93,18 @@ void main() {
   });
 
   test('features do not import other features presentation/data (only domain or core)', () {
-    final bad = violations(
-      (f) => f.contains('/features/') && !isCompositionRoot(f),
-      (i) {
-        final m = RegExp(r'/features/([^/]+)/(data|presentation)/').firstMatch(i);
-        return m != null;
-      },
-    ).where((v) {
-      // A feature may import its OWN data/presentation: compare feature names.
-      final file = v.split(' -> ').first;
-      final imp = v.split(' -> ').last;
-      final own = RegExp(r'/features/([^/]+)/').firstMatch(file)?.group(1);
-      final other = RegExp(r'/features/([^/]+)/').firstMatch(imp)?.group(1);
-      return own != other;
-    }).toList();
+    final bad =
+        violations((f) => f.contains('/features/') && !isCompositionRoot(f), (i) {
+          final m = RegExp(r'/features/([^/]+)/(data|presentation)/').firstMatch(i);
+          return m != null;
+        }).where((v) {
+          // A feature may import its OWN data/presentation: compare feature names.
+          final file = v.split(' -> ').first;
+          final imp = v.split(' -> ').last;
+          final own = RegExp(r'/features/([^/]+)/').firstMatch(file)?.group(1);
+          final other = RegExp(r'/features/([^/]+)/').firstMatch(imp)?.group(1);
+          return own != other;
+        }).toList();
     expect(bad, isEmpty, reason: bad.join('\n'));
   });
 }

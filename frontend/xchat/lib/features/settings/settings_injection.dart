@@ -9,7 +9,9 @@ import 'package:xchat/features/settings/presentation/cubit/theme_cubit.dart';
 
 void registerSettingsDependencies(GetIt sl) {
   sl
-    ..registerLazySingleton<ThemeLocalDataSource>(() => ThemeLocalDataSourceImpl(sl<KeyValueStore>()))
+    ..registerLazySingleton<ThemeLocalDataSource>(
+      () => ThemeLocalDataSourceImpl(sl<KeyValueStore>()),
+    )
     ..registerLazySingleton<ThemeRepository>(() => ThemeRepositoryImpl(sl<ThemeLocalDataSource>()))
     ..registerLazySingleton(() => GetThemeMode(sl<ThemeRepository>()))
     ..registerLazySingleton(() => SetThemeMode(sl<ThemeRepository>()))

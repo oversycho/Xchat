@@ -12,14 +12,14 @@ class _MockRemote extends Mock implements MessageRemoteDataSource {}
 class _MockLocal extends Mock implements MessageLocalDataSource {}
 
 MessageModel _model(String id, {String status = 'pending'}) => MessageModel(
-      id: id,
-      conversationId: 'c1',
-      senderId: 'u1',
-      type: 'text',
-      text: 'hi',
-      status: status,
-      createdAt: DateTime.utc(2026, 1, 1),
-    );
+  id: id,
+  conversationId: 'c1',
+  senderId: 'u1',
+  type: 'text',
+  text: 'hi',
+  status: status,
+  createdAt: DateTime.utc(2026, 1, 1),
+);
 
 void main() {
   late _MockRemote remote;
@@ -35,8 +35,9 @@ void main() {
     remote = _MockRemote();
     local = _MockLocal();
     outbox = OutboxRepositoryImpl(remote: remote, local: local);
-    when(() => local.updateStatus(any(), any(), failureReason: any(named: 'failureReason')))
-        .thenAnswer((_) async {});
+    when(
+      () => local.updateStatus(any(), any(), failureReason: any(named: 'failureReason')),
+    ).thenAnswer((_) async {});
     when(() => local.upsertAll(any())).thenAnswer((_) async {});
   });
 
@@ -58,7 +59,9 @@ void main() {
 
     expect(result.isLeft(), isTrue);
     result.match((f) => expect(f, isA<NetworkFailure>()), (_) => fail('expected failure'));
-    verify(() => local.updateStatus('m1', 'pending', failureReason: any(named: 'failureReason'))).called(1);
+    verify(
+      () => local.updateStatus('m1', 'pending', failureReason: any(named: 'failureReason')),
+    ).called(1);
   });
 
   test('server error marks the message failed with the reason', () async {

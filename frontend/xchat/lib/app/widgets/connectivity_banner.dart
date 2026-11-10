@@ -13,10 +13,7 @@ class ConnectivityBanner extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
           child: Center(
-            child: Text(
-              'Waiting for network…',
-              style: TextStyle(color: scheme.onErrorContainer),
-            ),
+            child: Text('Waiting for network…', style: TextStyle(color: scheme.onErrorContainer)),
           ),
         ),
       ),

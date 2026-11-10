@@ -16,7 +16,8 @@ final class RefreshLatestMessages implements UseCase<void, String> {
   final MessageRepository _repository;
 
   @override
-  Future<Either<Failure, void>> call(String conversationId) => _repository.refreshLatest(conversationId);
+  Future<Either<Failure, void>> call(String conversationId) =>
+      _repository.refreshLatest(conversationId);
 }
 
 final class LoadOlderParams {
@@ -50,7 +51,8 @@ final class EditMessage implements UseCase<void, EditMessageParams> {
   Future<Either<Failure, void>> call(EditMessageParams params) async {
     final text = params.newText.trim();
     if (text.isEmpty) return Either.left(const ValidationFailure('Message is empty'));
-    if (text.length > maxTextLength) return Either.left(const ValidationFailure('Message is too long'));
+    if (text.length > maxTextLength)
+      return Either.left(const ValidationFailure('Message is too long'));
     return _repository.edit(params.messageId, text);
   }
 }
@@ -84,7 +86,8 @@ final class MarkMessagesRead implements UseCase<void, List<String>> {
   final MessageRepository _repository;
 
   @override
-  Future<Either<Failure, void>> call(List<String> messageIds) => _repository.markRead(messageIds: messageIds);
+  Future<Either<Failure, void>> call(List<String> messageIds) =>
+      _repository.markRead(messageIds: messageIds);
 }
 
 final class SubscribeToConversation implements UseCase<void, String> {
@@ -92,7 +95,8 @@ final class SubscribeToConversation implements UseCase<void, String> {
   final MessageRepository _repository;
 
   @override
-  Future<Either<Failure, void>> call(String conversationId) => _repository.startRealtime(conversationId);
+  Future<Either<Failure, void>> call(String conversationId) =>
+      _repository.startRealtime(conversationId);
 }
 
 final class UnsubscribeFromConversation implements UseCase<void, String> {
@@ -100,5 +104,6 @@ final class UnsubscribeFromConversation implements UseCase<void, String> {
   final MessageRepository _repository;
 
   @override
-  Future<Either<Failure, void>> call(String conversationId) => _repository.stopRealtime(conversationId);
+  Future<Either<Failure, void>> call(String conversationId) =>
+      _repository.stopRealtime(conversationId);
 }

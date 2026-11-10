@@ -14,9 +14,9 @@ Future<Either<Failure, T>> guard<T>(Future<T> Function() action) async {
 }
 
 Failure mapException(AppException e) => switch (e) {
-      NetworkException() => NetworkFailure(e.message),
-      ServerException() => ServerFailure(e.message, code: e.code),
-      UnauthorizedException() => UnauthorizedFailure(e.message),
-      CacheException() => CacheFailure(e.message),
-      RealtimeException() => ServerFailure(e.message),
-    };
+  NetworkException() => NetworkFailure(e.message),
+  ServerException() => ServerFailure(e.message, code: e.code),
+  UnauthorizedException() => UnauthorizedFailure(e.message),
+  CacheException() => CacheFailure(e.message),
+  RealtimeException() => ServerFailure(e.message),
+};

@@ -25,7 +25,10 @@ final class InMemoryLocalDatabase implements LocalDatabase {
   Future<List<LocalRecord>> getAll(String collection, List<String> ids) async {
     final bucket = _store[collection];
     if (bucket == null) return const [];
-    return [for (final id in ids) if (bucket[id] != null) bucket[id]!];
+    return [
+      for (final id in ids)
+        if (bucket[id] != null) bucket[id]!,
+    ];
   }
 
   @override
@@ -48,8 +51,13 @@ final class InMemoryLocalDatabase implements LocalDatabase {
     Set<String>? statuses,
     int? limit,
     bool descending = true,
-  }) async =>
-      _select(collection, partition: partition, statuses: statuses, limit: limit, descending: descending);
+  }) async => _select(
+    collection,
+    partition: partition,
+    statuses: statuses,
+    limit: limit,
+    descending: descending,
+  );
 
   @override
   Stream<List<LocalRecord>> watch(String collection, {String? partition}) {
@@ -76,12 +84,17 @@ final class InMemoryLocalDatabase implements LocalDatabase {
     int? limit,
     bool descending = true,
   }) {
-    var rows = (_store[collection]?.values ?? const <LocalRecord>[])
-        .where((r) =>
-            (partition == null || r.partition == partition) &&
-            (statuses == null || statuses.contains(r.status)))
-        .toList()
-      ..sort((a, b) => descending ? b.sortKey.compareTo(a.sortKey) : a.sortKey.compareTo(b.sortKey));
+    var rows =
+        (_store[collection]?.values ?? const <LocalRecord>[])
+            .where(
+              (r) =>
+                  (partition == null || r.partition == partition) &&
+                  (statuses == null || statuses.contains(r.status)),
+            )
+            .toList()
+          ..sort(
+            (a, b) => descending ? b.sortKey.compareTo(a.sortKey) : a.sortKey.compareTo(b.sortKey),
+          );
     if (limit != null && rows.length > limit) rows = rows.sublist(0, limit);
     return rows;
   }

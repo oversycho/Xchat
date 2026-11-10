@@ -36,7 +36,7 @@ final class SupabaseAuthGateway implements AuthGateway {
 
   @override
   Future<void> deleteAccount() => guardSupabase(() async {
-        await _client.functions.invoke('delete-account', method: HttpMethod.post);
-        await _auth.signOut(scope: SignOutScope.local);
-      });
+    await _client.functions.invoke('delete-account', method: HttpMethod.post);
+    await _auth.signOut(scope: SignOutScope.local);
+  });
 }

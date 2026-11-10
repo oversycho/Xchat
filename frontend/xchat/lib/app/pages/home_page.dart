@@ -24,7 +24,8 @@ class HomePage extends StatelessWidget {
             tooltip: 'Theme',
             onSelected: context.read<ThemeCubit>().setMode,
             itemBuilder: (_) => [
-              for (final mode in AppThemeMode.values) PopupMenuItem(value: mode, child: Text(mode.name)),
+              for (final mode in AppThemeMode.values)
+                PopupMenuItem(value: mode, child: Text(mode.name)),
             ],
           ),
           IconButton(
@@ -34,7 +35,11 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-      body: Center(child: Text('Signed in as ${phone ?? 'unknown'}.\nThe chat list is built in the next phase.')),
+      body: Center(
+        child: Text(
+          'Signed in as ${phone ?? 'unknown'}.\nThe chat list is built in the next phase.',
+        ),
+      ),
     );
   }
 }

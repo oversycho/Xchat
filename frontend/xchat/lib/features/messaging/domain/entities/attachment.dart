@@ -25,5 +25,14 @@ final class Attachment extends Equatable {
   final int? durationMs;
 
   @override
-  List<Object?> get props => [id, kind, storagePath, mimeType, sizeBytes, width, height, durationMs];
+  List<Object?> get props => [
+    id,
+    kind,
+    storagePath,
+    mimeType,
+    sizeBytes,
+    width,
+    height,
+    durationMs,
+  ];
 }

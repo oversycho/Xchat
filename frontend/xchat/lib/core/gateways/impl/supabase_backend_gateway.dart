@@ -41,20 +41,12 @@ final class SupabaseBackendGateway implements BackendGateway {
     String returning = '*',
   }) {
     return _run(
-      () => _client
-          .from(table)
-          .upsert(values, onConflict: onConflict)
-          .select(returning)
-          .single(),
+      () => _client.from(table).upsert(values, onConflict: onConflict).select(returning).single(),
     );
   }
 
   @override
-  Future<void> upsertAll(
-    String table,
-    List<Map<String, dynamic>> rows, {
-    String? onConflict,
-  }) {
+  Future<void> upsertAll(String table, List<Map<String, dynamic>> rows, {String? onConflict}) {
     return _run(() async {
       await _client.from(table).upsert(rows, onConflict: onConflict);
     });
@@ -86,10 +78,7 @@ final class SupabaseBackendGateway implements BackendGateway {
     });
   }
 
-  PostgrestFilterBuilder<T> _apply<T>(
-    PostgrestFilterBuilder<T> query,
-    BackendFilter f,
-  ) =>
+  PostgrestFilterBuilder<T> _apply<T>(PostgrestFilterBuilder<T> query, BackendFilter f) =>
       switch (f.op) {
         FilterOp.eq => query.eq(f.column, f.value!),
         FilterOp.neq => query.neq(f.column, f.value!),

@@ -11,8 +11,8 @@ final class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl({
     required AuthRemoteDataSource remote,
     required EntityMapper<AuthUserModel, AuthUser> mapper,
-  })  : _remote = remote,
-        _mapper = mapper;
+  }) : _remote = remote,
+       _mapper = mapper;
 
   final AuthRemoteDataSource _remote;
   final EntityMapper<AuthUserModel, AuthUser> _mapper;
@@ -23,7 +23,8 @@ final class AuthRepositoryImpl implements AuthRepository {
   Stream<AuthUser?> watchAuthState() => _remote.watchUser().map(_entity);
 
   @override
-  Future<Either<Failure, AuthUser?>> getCurrentUser() => guard(() async => _entity(_remote.currentUser));
+  Future<Either<Failure, AuthUser?>> getCurrentUser() =>
+      guard(() async => _entity(_remote.currentUser));
 
   @override
   Future<Either<Failure, void>> sendOtp(String phone) => guard<void>(() => _remote.sendOtp(phone));

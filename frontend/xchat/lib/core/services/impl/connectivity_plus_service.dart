@@ -2,7 +2,8 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:xchat/core/services/connectivity_service.dart';
 
 final class ConnectivityPlusService implements ConnectivityService {
-  ConnectivityPlusService([Connectivity? connectivity]) : _connectivity = connectivity ?? Connectivity();
+  ConnectivityPlusService([Connectivity? connectivity])
+    : _connectivity = connectivity ?? Connectivity();
   final Connectivity _connectivity;
 
   static bool _isOnline(List<ConnectivityResult> results) =>

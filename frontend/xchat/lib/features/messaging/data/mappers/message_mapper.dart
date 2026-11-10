@@ -19,57 +19,57 @@ final class MessageMapper implements EntityMapper<MessageModel, Message> {
 
   @override
   Message toEntity(MessageModel m) => Message(
-        id: m.id,
-        conversationId: m.conversationId,
-        senderId: m.senderId,
-        type: MessageType.values.asNameMap()[_fromWire(m.type)] ?? MessageType.system,
-        status: MessageStatus.values.asNameMap()[m.status] ?? MessageStatus.sent,
-        createdAt: m.createdAt,
-        text: m.text,
-        replyToId: m.replyToId,
-        editedAt: m.editedAt,
-        failureReason: m.failureReason,
-        attachments: [
-          for (final a in m.attachments)
-            Attachment(
-              id: a.id,
-              kind: AttachmentKind.values.asNameMap()[_fromWire(a.kind)] ?? AttachmentKind.document,
-              storagePath: a.storagePath,
-              mimeType: a.mimeType,
-              sizeBytes: a.sizeBytes,
-              width: a.width,
-              height: a.height,
-              durationMs: a.durationMs,
-            ),
-        ],
-        reactions: [for (final r in m.reactions) Reaction(userId: r.userId, emoji: r.emoji)],
-      );
+    id: m.id,
+    conversationId: m.conversationId,
+    senderId: m.senderId,
+    type: MessageType.values.asNameMap()[_fromWire(m.type)] ?? MessageType.system,
+    status: MessageStatus.values.asNameMap()[m.status] ?? MessageStatus.sent,
+    createdAt: m.createdAt,
+    text: m.text,
+    replyToId: m.replyToId,
+    editedAt: m.editedAt,
+    failureReason: m.failureReason,
+    attachments: [
+      for (final a in m.attachments)
+        Attachment(
+          id: a.id,
+          kind: AttachmentKind.values.asNameMap()[_fromWire(a.kind)] ?? AttachmentKind.document,
+          storagePath: a.storagePath,
+          mimeType: a.mimeType,
+          sizeBytes: a.sizeBytes,
+          width: a.width,
+          height: a.height,
+          durationMs: a.durationMs,
+        ),
+    ],
+    reactions: [for (final r in m.reactions) Reaction(userId: r.userId, emoji: r.emoji)],
+  );
 
   @override
   MessageModel toModel(Message e) => MessageModel(
-        id: e.id,
-        conversationId: e.conversationId,
-        senderId: e.senderId,
-        type: _toWire(e.type.name),
-        status: e.status.name,
-        createdAt: e.createdAt,
-        text: e.text,
-        replyToId: e.replyToId,
-        editedAt: e.editedAt,
-        failureReason: e.failureReason,
-        attachments: [
-          for (final a in e.attachments)
-            AttachmentModel(
-              id: a.id,
-              kind: _toWire(a.kind.name),
-              storagePath: a.storagePath,
-              mimeType: a.mimeType,
-              sizeBytes: a.sizeBytes,
-              width: a.width,
-              height: a.height,
-              durationMs: a.durationMs,
-            ),
-        ],
-        reactions: [for (final r in e.reactions) ReactionModel(userId: r.userId, emoji: r.emoji)],
-      );
+    id: e.id,
+    conversationId: e.conversationId,
+    senderId: e.senderId,
+    type: _toWire(e.type.name),
+    status: e.status.name,
+    createdAt: e.createdAt,
+    text: e.text,
+    replyToId: e.replyToId,
+    editedAt: e.editedAt,
+    failureReason: e.failureReason,
+    attachments: [
+      for (final a in e.attachments)
+        AttachmentModel(
+          id: a.id,
+          kind: _toWire(a.kind.name),
+          storagePath: a.storagePath,
+          mimeType: a.mimeType,
+          sizeBytes: a.sizeBytes,
+          width: a.width,
+          height: a.height,
+          durationMs: a.durationMs,
+        ),
+    ],
+    reactions: [for (final r in e.reactions) ReactionModel(userId: r.userId, emoji: r.emoji)],
+  );
 }

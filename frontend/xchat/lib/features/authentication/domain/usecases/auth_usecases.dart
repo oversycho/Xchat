@@ -32,7 +32,9 @@ final class SignInWithPhone implements UseCase<void, String> {
   Future<Either<Failure, void>> call(String phone) async {
     final normalized = phone.replaceAll(RegExp(r'[\s\-()]'), '');
     if (!_e164.hasMatch(normalized)) {
-      return Either.left(const ValidationFailure('Enter the number in international format, e.g. +14155550100'));
+      return Either.left(
+        const ValidationFailure('Enter the number in international format, e.g. +14155550100'),
+      );
     }
     return _repository.sendOtp(normalized);
   }

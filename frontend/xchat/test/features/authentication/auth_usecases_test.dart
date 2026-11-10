@@ -21,8 +21,9 @@ void main() {
     });
 
     test('strips spaces, dashes and parentheses before sending', () async {
-      when(() => repository.sendOtp('+14155550100'))
-          .thenAnswer((_) async => Either<Failure, void>.right(null));
+      when(
+        () => repository.sendOtp('+14155550100'),
+      ).thenAnswer((_) async => Either<Failure, void>.right(null));
 
       final result = await SignInWithPhone(repository)('+1 (415) 555-0100');
 
@@ -33,10 +34,17 @@ void main() {
 
   group('VerifyOtp', () {
     test('rejects codes that are not 4-8 digits', () async {
-      final result = await VerifyOtp(repository)(const VerifyOtpParams(phone: '+14155550100', code: '12ab'));
+      final result = await VerifyOtp(repository)(
+        const VerifyOtpParams(phone: '+14155550100', code: '12ab'),
+      );
 
       expect(result.isLeft(), isTrue);
-      verifyNever(() => repository.verifyOtp(phone: any(named: 'phone'), code: any(named: 'code')));
+      verifyNever(
+        () => repository.verifyOtp(
+          phone: any(named: 'phone'),
+          code: any(named: 'code'),
+        ),
+      );
     });
   });
 }

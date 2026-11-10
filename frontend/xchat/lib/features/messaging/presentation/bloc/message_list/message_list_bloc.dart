@@ -25,15 +25,15 @@ class MessageListBloc extends Bloc<MessageListEvent, MessageListState> {
     required DeleteMessage deleteMessage,
     required ReactToMessage reactToMessage,
     required RetryMessage retryMessage,
-  })  : _watchMessages = watchMessages,
-        _refreshLatest = refreshLatest,
-        _loadOlder = loadOlder,
-        _subscribe = subscribe,
-        _unsubscribe = unsubscribe,
-        _deleteMessage = deleteMessage,
-        _reactToMessage = reactToMessage,
-        _retryMessage = retryMessage,
-        super(const MessageListState.initial()) {
+  }) : _watchMessages = watchMessages,
+       _refreshLatest = refreshLatest,
+       _loadOlder = loadOlder,
+       _subscribe = subscribe,
+       _unsubscribe = unsubscribe,
+       _deleteMessage = deleteMessage,
+       _reactToMessage = reactToMessage,
+       _retryMessage = retryMessage,
+       super(const MessageListState.initial()) {
     on<MessageListStarted>(_onStarted);
     on<MessageListOlderRequested>(_onOlderRequested, transformer: droppable());
     on<MessageListDeleteRequested>(_onDeleteRequested);
@@ -75,12 +75,9 @@ class MessageListBloc extends Bloc<MessageListEvent, MessageListState> {
 
   Future<void> _syncInBackground() async {
     final result = await _refreshLatest(conversationId);
-    result.fold(
-      (failure) {
-        if (!isClosed) add(MessageListEvent.syncFailed(failure));
-      },
-      (_) {},
-    );
+    result.fold((failure) {
+      if (!isClosed) add(MessageListEvent.syncFailed(failure));
+    }, (_) {});
   }
 
   Future<void> _onOlderRequested(
@@ -90,7 +87,7 @@ class MessageListBloc extends Bloc<MessageListEvent, MessageListState> {
     final current = state;
     if (current is! MessageListLoaded || !current.hasMore || current.isLoadingMore) return;
 
-    emit(current.copyWith(isLoadingMore: true, transientFailure: null));
+    emit(current.copyWith(isLoadingMore: true, clearFailure: true));
     final result = await _loadOlder(LoadOlderParams(conversationId));
 
     final latest = state;
@@ -141,7 +138,7 @@ class MessageListBloc extends Bloc<MessageListEvent, MessageListState> {
 
   void _onFailureDismissed(MessageListFailureDismissed event, Emitter<MessageListState> emit) {
     final current = state;
-    if (current is MessageListLoaded) emit(current.copyWith(transientFailure: null));
+    if (current is MessageListLoaded) emit(current.copyWith(clearFailure: true));
   }
 
   void _emitTransient(Failure failure, Emitter<MessageListState> emit) {

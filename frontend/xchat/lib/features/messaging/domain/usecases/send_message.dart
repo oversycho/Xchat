@@ -34,10 +34,10 @@ final class SendMessage implements UseCase<Message, SendMessageParams> {
     required OutboxRepository outbox,
     required IdGenerator ids,
     required Clock clock,
-  })  : _messages = messages,
-        _outbox = outbox,
-        _ids = ids,
-        _clock = clock;
+  }) : _messages = messages,
+       _outbox = outbox,
+       _ids = ids,
+       _clock = clock;
 
   static const maxTextLength = 4096;
 
@@ -69,13 +69,10 @@ final class SendMessage implements UseCase<Message, SendMessageParams> {
     );
 
     final stored = await _messages.enqueueSend(message);
-    return stored.fold(
-      (failure) => Either<Failure, Message>.left(failure),
-      (_) {
-        unawaited(_outbox.flush());
-        return Either<Failure, Message>.right(message);
-      },
-    );
+    return stored.fold((failure) => Either<Failure, Message>.left(failure), (_) {
+      unawaited(_outbox.flush());
+      return Either<Failure, Message>.right(message);
+    });
   }
 
   MessageType _typeFor(List<Attachment> attachments) {

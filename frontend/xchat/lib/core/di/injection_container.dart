@@ -51,7 +51,9 @@ Future<void> configureDependencies({
     ..registerLazySingleton<Clock>(() => const SystemClock())
     ..registerLazySingleton<IdGenerator>(UuidIdGenerator.new)
     ..registerLazySingleton<ConnectivityService>(ConnectivityPlusService.new)
-    ..registerLazySingleton<KeyValueStore>(() => SharedPreferencesKeyValueStore(sl<SharedPreferences>()))
+    ..registerLazySingleton<KeyValueStore>(
+      () => SharedPreferencesKeyValueStore(sl<SharedPreferences>()),
+    )
     ..registerLazySingleton<LocalDataCleaner>(() => LocalDatabaseDataCleaner(sl<LocalDatabase>()));
 
   registerAuthenticationDependencies(sl);

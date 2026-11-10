@@ -11,20 +11,21 @@ final class DraftRepositoryImpl implements DraftRepository {
   DraftRepositoryImpl({
     required DraftLocalDataSource local,
     required EntityMapper<DraftModel, Draft> mapper,
-  })  : _local = local,
-        _mapper = mapper;
+  }) : _local = local,
+       _mapper = mapper;
 
   final DraftLocalDataSource _local;
   final EntityMapper<DraftModel, Draft> _mapper;
 
   @override
   Future<Either<Failure, Draft?>> get(String conversationId) => guard<Draft?>(() async {
-        final model = await _local.get(conversationId);
-        return model == null ? null : _mapper.toEntity(model);
-      });
+    final model = await _local.get(conversationId);
+    return model == null ? null : _mapper.toEntity(model);
+  });
 
   @override
-  Future<Either<Failure, void>> save(Draft draft) => guard<void>(() => _local.save(_mapper.toModel(draft)));
+  Future<Either<Failure, void>> save(Draft draft) =>
+      guard<void>(() => _local.save(_mapper.toModel(draft)));
 
   @override
   Future<Either<Failure, void>> clear(String conversationId) =>

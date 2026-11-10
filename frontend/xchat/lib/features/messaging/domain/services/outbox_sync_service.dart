@@ -13,9 +13,9 @@ class OutboxSyncService {
     required FlushOutbox flushOutbox,
     required RecoverInterruptedSends recoverInterruptedSends,
     this.safetyInterval = const Duration(minutes: 1),
-  })  : _connectivity = connectivity,
-        _flushOutbox = flushOutbox,
-        _recoverInterruptedSends = recoverInterruptedSends;
+  }) : _connectivity = connectivity,
+       _flushOutbox = flushOutbox,
+       _recoverInterruptedSends = recoverInterruptedSends;
 
   final Duration safetyInterval;
   final ConnectivityService _connectivity;

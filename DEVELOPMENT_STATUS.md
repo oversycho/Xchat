@@ -5,7 +5,9 @@
 |---|---|
 | `supabase/migrations/*` + `supabase/tests/database/*` | **Executed** on PostgreSQL 16 with a stand-in for Supabase's `auth`/`storage` schemas: 6 migrations apply from scratch, 76 pgTAP assertions pass, and deliberately breaking policies/triggers makes them fail. **Not** yet run through the Supabase CLI/Docker stack. |
 | `supabase/functions/delete-account` | Not executed. |
-| Flutter/Dart code | **Never compiled or analysed** (no Flutter SDK was available). Layering rules were checked with a script mirroring `test/architecture`. Expect a few small fixes after the first `flutter analyze`. |
+| Dart: core, domain, data, BLoCs/Cubits (~65 files) | **Analysed with the real Dart analyzer (3.13.7): 0 errors, 0 warnings** (strict-casts/strict-raw-types on), against the real `fpdart`/`equatable`/`bloc`/`bloc_concurrency`/`get_it` sources. **Behaviour executed** on an in-memory DB with fake servers: 53 checks for messaging (pagination over 70 messages, offline send, retry, realtime insert/edit/delete, resync, outbox recovery, double-tap guard, composer reply/edit/draft) and 14 for AuthBloc, all passing. These scripts are not shipped. |
+| Dart: Flutter UI, router, app shell, Supabase/shared_preferences/connectivity gateways, DI, `main.dart`, all `flutter_test` tests | **Only parsed and formatted** (all 111 files, `dart format` clean). NOT type-checked and NOT run: needs the Flutter SDK + pub.dev, which were unavailable. |
+| Dependency resolution (`pub get`) | Not possible offline. See the note below. |
 
 Matched against the supplied scaffold: package `xchat`, Dart `>=3.12.1`, `flutter_lints 6`, platforms android/ios/web
 (iOS 13.0, Android `flutter.minSdkVersion`, AGP 9). Code is web-safe (no `dart:io`). Dependency versions could NOT be
@@ -16,7 +18,6 @@ First run on your machine:
 ```
 cd frontend/xchat
 flutter pub get
-dart run build_runner build --delete-conflicting-outputs   # generates *.freezed.dart
 flutter analyze && flutter test
 ```
 Backend: see `supabase/README.md` (commands start at section 1).
@@ -49,7 +50,7 @@ Interface-first layering enforced by `test/architecture` (domain/presentation/da
 `*Impl` only visible to composition roots, SDKs only inside `impl/`), `guard()` turning exceptions into `Failure`s,
 single error pipeline (`bootstrap` -> `ErrorReporter`), `--dart-define-from-file` config with an https check for prod,
 strict analyzer (`strict-casts`, `strict-raw-types`, `unawaited_futures`, `always_use_package_imports`),
-generated code not committed (`make gen`), CI for both halves, column-level grants + RLS + pgTAP on the backend.
+no code generation (sealed Equatable states/events), CI for both halves, column-level grants + RLS + pgTAP on the backend.
 
 ## NOT done / known gaps
 - **Isar `LocalDatabase`.** DI uses the in-memory one: no persistence across restarts (blocks real offline-first).

@@ -69,8 +69,9 @@ class _XchatViewState extends State<XchatView> {
           builder: (context, child) => Column(
             children: [
               BlocBuilder<ConnectivityCubit, NetworkStatus>(
-                builder: (_, status) =>
-                    status == NetworkStatus.offline ? const ConnectivityBanner() : const SizedBox.shrink(),
+                builder: (_, status) => status == NetworkStatus.offline
+                    ? const ConnectivityBanner()
+                    : const SizedBox.shrink(),
               ),
               Expanded(child: child ?? const SizedBox.shrink()),
             ],

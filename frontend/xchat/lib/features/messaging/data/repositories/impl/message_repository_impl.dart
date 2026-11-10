@@ -18,10 +18,10 @@ final class MessageRepositoryImpl implements MessageRepository {
     required MessageLocalDataSource local,
     required MessageRealtimeDataSource realtime,
     required EntityMapper<MessageModel, Message> mapper,
-  })  : _remote = remote,
-        _local = local,
-        _realtime = realtime,
-        _mapper = mapper;
+  }) : _remote = remote,
+       _local = local,
+       _realtime = realtime,
+       _mapper = mapper;
 
   static const _initialPageSize = 30;
   static const _catchUpBatch = 100;
@@ -33,7 +33,9 @@ final class MessageRepositoryImpl implements MessageRepository {
   final Map<String, StreamSubscription<void>> _subscriptions = {};
 
   @override
-  Stream<List<Message>> watchMessages(String conversationId) => _local.watch(conversationId).map(
+  Stream<List<Message>> watchMessages(String conversationId) => _local
+      .watch(conversationId)
+      .map(
         (models) => [
           for (final m in models)
             if (m.deletedAt == null) _mapper.toEntity(m),
@@ -45,7 +47,8 @@ final class MessageRepositoryImpl implements MessageRepository {
       guard<void>(() => _catchUp(conversationId));
 
   @override
-  Future<Either<Failure, PageResult>> loadOlder(String conversationId, {int limit = 30}) => guard(() async {
+  Future<Either<Failure, PageResult>> loadOlder(String conversationId, {int limit = 30}) =>
+      guard(() async {
         final oldest = await _local.oldestSyncedCreatedAt(conversationId);
         final page = await _remote.fetchPage(conversationId, before: oldest, limit: limit);
         await _storeIncoming(page);
@@ -58,9 +61,9 @@ final class MessageRepositoryImpl implements MessageRepository {
 
   @override
   Future<Either<Failure, void>> edit(String messageId, String newText) => guard<void>(() async {
-        await _remote.updateText(messageId, newText);
-        await _refreshOne(messageId);
-      });
+    await _remote.updateText(messageId, newText);
+    await _refreshOne(messageId);
+  });
 
   @override
   Future<Either<Failure, void>> delete(String messageId) async {
@@ -69,7 +72,8 @@ final class MessageRepositoryImpl implements MessageRepository {
       return Either.left(const ValidationFailure('Message is being sent'));
     }
     return guard<void>(() async {
-      final neverReachedServer = local != null && (local.status == 'pending' || local.status == 'failed');
+      final neverReachedServer =
+          local != null && (local.status == 'pending' || local.status == 'failed');
       if (!neverReachedServer) await _remote.softDelete(messageId);
       await _local.deleteById(messageId);
     });
@@ -80,11 +84,10 @@ final class MessageRepositoryImpl implements MessageRepository {
     required String messageId,
     required String emoji,
     required bool add,
-  }) =>
-      guard<void>(() async {
-        await _remote.setReaction(messageId: messageId, emoji: emoji, add: add);
-        await _refreshOne(messageId);
-      });
+  }) => guard<void>(() async {
+    await _remote.setReaction(messageId: messageId, emoji: emoji, add: add);
+    await _refreshOne(messageId);
+  });
 
   @override
   Future<Either<Failure, void>> markRead({required List<String> messageIds}) =>
@@ -92,18 +95,17 @@ final class MessageRepositoryImpl implements MessageRepository {
 
   @override
   Future<Either<Failure, void>> startRealtime(String conversationId) => guard<void>(() async {
-        if (_subscriptions.containsKey(conversationId)) return;
-        _subscriptions[conversationId] = _realtime
-            .watch(conversationId)
-            .asyncMap((change) => _handleChange(conversationId, change))
-            .listen((_) {}, onError: (Object _) {});
-      });
+    if (_subscriptions.containsKey(conversationId)) return;
+    _subscriptions[conversationId] = _realtime
+        .watch(conversationId)
+        .asyncMap((change) => _handleChange(conversationId, change))
+        .listen((_) {}, onError: (Object _) {});
+  });
 
   @override
-  Future<Either<Failure, void>> stopRealtime(String conversationId) =>
-      guard<void>(() async {
-        await _subscriptions.remove(conversationId)?.cancel();
-      });
+  Future<Either<Failure, void>> stopRealtime(String conversationId) => guard<void>(() async {
+    await _subscriptions.remove(conversationId)?.cancel();
+  });
 
   // ---- internals ----
 
@@ -168,10 +170,10 @@ final class MessageRepositoryImpl implements MessageRepository {
   }
 
   int _rank(String status) => switch (status) {
-        'pending' => 0,
-        'sending' || 'failed' => 1,
-        'sent' => 2,
-        'read' => 3,
-        _ => 2,
-      };
+    'pending' => 0,
+    'sending' || 'failed' => 1,
+    'sent' => 2,
+    'read' => 3,
+    _ => 2,
+  };
 }
